@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="page-shell">
+        <header>
+            <h1>Task Manager</h1>
+            <p>Track your tasks, mark them complete, and watch your progress grow.</p>
+        </header>
+
+        <section class="panel">
+            <h2>Add a new task</h2>
+            <form action="/add" method="post" class="task-form">
+                <label>
+                    Title
+                    <input type="text" name="title" placeholder="Task title" required>
+                </label>
+                <label>
+                    Description
+                    <textarea name="description" placeholder="Task description" required></textarea>
+                </label>
+                <button type="submit">Add Task</button>
+            </form>
+        </section>
+
+        <section class="panel">
+            <div class="panel-header">
+                <h2>Tasks</h2>
+                <div class="progress-badge">
+                    Progress: {{ progress|round(1) }}%
+                    {% if total > 0 %}
+                        ({{ completed }}/{{ total }})
+                    {% endif %}
+                </div>
+            </div>
+            {% if tasks %}
+                <ul class="task-list">
+                    {% for task in tasks %}
+                        <li class="task-item {{ 'done' if task.completed else '' }}">
+                            <div>
+                                <strong>{{ task.title }}</strong>
+                                <p>{{ task.description }}</p>
+                            </div>
+                            <div class="task-actions">
+                                <span class="status">{{ 'Completed' if task.completed else 'Pending' }}</span>
+                                {% if not task.completed %}
+                                    <form action="/complete/{{ loop.index0 }}" method="post">
+                                        <button type="submit">Mark complete</button>
+                                    </form>
+                                {% endif %}
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="empty-state">No tasks yet. Add one to get started.</p>
+            {% endif %}
+        </section>
+
+        <footer>
+            <p>Use the command <code>python main.py web</code> to open this page.</p>
+        </footer>
+    </div>
+</body>
+</html>
